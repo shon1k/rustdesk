@@ -3,13 +3,9 @@ name: Build Windows EXE
 on:
   workflow_dispatch:
 
-env:
-  VERSION: 1.5.3
-  FLUTTER_VERSION: 3.24.5
-
 jobs:
   build-windows:
-    name: Build Windows x64
+    name: Build Windows Portable EXE
     runs-on: windows-2022
 
     steps:
@@ -27,7 +23,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: ${{ env.FLUTTER_VERSION }}
+          flutter-version: '3.24.5'
           architecture: x64
 
       - name: Install LLVM
@@ -40,20 +36,13 @@ jobs:
         with:
           vcpkgGitCommitId: 9e593bb18ea69cc5095e012465dcd675a822ed0d
 
-      - name: Generate Bridge
-        run: cargo build --package librustdesk --release --target x86_64-pc-windows-msvc
-        working-directory: ./libs/hbb_common
-
-      - name: Build Flutter Windows
-        run: flutter build windows --release
-
-      - name: Build RustDesk
-        run: cargo build --release --features flutter --target x86_64-pc-windows-msvc
+      - name: Build RustDesk (Official Build Script)
+        run: python build.py --portable
 
       - name: Upload EXE
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: RustDesk-Windows-x64
-          path: ./target/x86_64-pc-windows-msvc/release/rustdesk.exe
+          path: ./artifacts/*.exe
           if-no-files-found: warn
