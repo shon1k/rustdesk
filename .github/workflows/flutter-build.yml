@@ -553,12 +553,12 @@ jobs:
         run: |
           BASE_URL=${{ env.SIGN_BASE_URL }} SECRET_KEY=${{ secrets.SIGN_SECRET_KEY }} python3 res/job.py sign_files ./SignOutput
 
-      - name: Upload signed Windows Flutter EXE
+            - name: Upload signed Windows Flutter EXE
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: windows-flutter-${{ matrix.job.arch }}-exe
-          path: ./SignOutput/rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}.exe
+          path: ./flutter/build/windows/x64/runner/Release/  # <-- ВОТ СЮДА МЕНЯЕМ ПУТЬ
           if-no-files-found: error
 
       - name: Upload signed Windows Flutter MSI
